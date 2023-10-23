@@ -63,7 +63,9 @@ def _download(url: str, root: str = os.path.expanduser("~/.cache/clip")):
                 loop.update(len(buffer))
 
     if hashlib.sha256(open(download_target, "rb").read()).hexdigest() != expected_sha256:
-        raise RuntimeError(f"Model has been downloaded but the SHA256 checksum does not not match")
+        raise RuntimeError(
+            "Model has been downloaded but the SHA256 checksum does not not match"
+        )
 
     return download_target
 
@@ -211,11 +213,10 @@ def tokenize(texts: Union[str, List[str]], context_length: int = 77, truncate: b
 
     for i, tokens in enumerate(all_tokens):
         if len(tokens) > context_length:
-            if truncate:
-                tokens = tokens[:context_length]
-                tokens[-1] = eot_token
-            else:
+            if not truncate:
                 raise RuntimeError(f"Input {texts[i]} is too long for context length {context_length}")
+            tokens = tokens[:context_length]
+            tokens[-1] = eot_token
         result[i, :len(tokens)] = torch.tensor(tokens)
 
     return result
